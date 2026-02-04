@@ -4,17 +4,7 @@ version = "0.0.1"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0.100"
-bytemuck = { version = "1.24.0", features = ["derive"] }
-egui = "0.33.3"
-egui-wgpu = { version = "0.33.3", features = ["winit"] }
-egui-winit = "0.33.3"
-futures = "0.3.31"
-log = "0.4.29"
-nalgebra-glm = { version = "0.20.0", features = [
-    "convert-bytemuck",
-    "serde-serialize",
-] }
-web-time = "1.1.0"
-wgpu = { version = "27.0.1", default-features = false }
-winit = "0.30.12"
+eframe = "0.33.3"
+egui_extras = { version = "0.33.3", features = ["all_loaders"] }
+env_logger = "0.11.8"
+image = { version = "0.25.9", features = ["jpeg", "png"] }
