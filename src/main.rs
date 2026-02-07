@@ -1,10 +1,11 @@
 use eframe::egui::{self, Vec2};
 
-use crate::tailui::{topcontextmenu::*, toyboxmenu::*, misctools::*, settings::*};
-
 pub mod tailui;
+pub mod sourcepp;
+use crate::{sourcepp::vpkpp::*, tailui::{misctools::*, settings::*, topcontextmenu::*, toyboxmenu::*}};
 
 fn main() {
+    openvpk("./test.vpk");
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
     let options = eframe::NativeOptions {
         ..Default::default()

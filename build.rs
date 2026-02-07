@@ -7,7 +7,7 @@ fn main() {
 
     // Tell cargo to tell rustc to link the system libsourcepp_vpkpp
     // shared library.
-    println!("cargo:rustc-link-lib=sourcepp_vpkpp");
+    println!("cargo:rustc-link-lib=sourcepp_vpkppc");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -15,20 +15,21 @@ fn main() {
     let bindings = bindgen::Builder::default()
         // The input header we would like to generate
         // bindings for.
-        .header("./cpp-include/wrapper.hpp")
+        .header("./cpp-include/wrapper.h")
 
 
-        .clang_arg("-std=c++20")
-        .clang_arg("-DLIBCXX_ENABLE_INCOMPLETE_FEATURES=ON")
+        // .clang_arg("-std=c++20")
+        // .clang_arg("-DLIBCXX_ENABLE_INCOMPLETE_FEATURES=ON")
 
         //set include root path
         .clang_arg("-I./cpp-include/linux/include")
         // .clang_arg("-I/usr/include/")
-        .clang_arg("-I/usr/include/c++/15.2.1")
-        .clang_arg("-I/usr/include/c++/15.2.1/x86_64-pc-linux-gnu")
+        // .clang_arg("-I/usr/include/c++/15.2.1")
+        // .clang_arg("-I/usr/include/c++/15.2.1/x86_64-pc-linux-gnu")
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+        
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
@@ -37,6 +38,6 @@ fn main() {
     // Write the bindings to the $OUT_DIR/bindings.rs file.
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     bindings
-        .write_to_file(out_path.join("bindings.rs"))
+        .write_to_file("src/sourcepp/vpkpp/bindings.rs")
         .expect("Couldn't write bindings!");
 }
