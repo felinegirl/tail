@@ -3,7 +3,8 @@
 
 ![Logo](https://github.com/felinegirl/tail/blob/main/gitlogo.png?raw=true)
 
-  
+this is very very early development, to the point we don't even have rendering yet
+I'm going to be monching on this project for a little bit
 
 ## Building
 
@@ -11,25 +12,16 @@
 
 install le dependencies:
 
-`$pacman -S cargo`
+for a linux build you to get all these and exsrtact them to /cpp-include/linux
 
-  
+[sourcepp](https://github.com/craftablescience/sourcepp/releases/tag/v2026.1.3) (get "cpp-dist-ubuntu-latest.zip")
+[miniz](https://github.com/richgel999/miniz)
+[hat-trie](https://github.com/Tessil/hat-trie)
+[half](https://github.com/craftablescience/sourcepp/blob/e205ad3f7f7f6f6e12a0963507f754722207fd70/ext/half/include/half.hpp) (just need to download drop half.hpp in to /cpp-include/linux/include)
 
-verify that it is installed:
+I'll probably write a sh to automate this later
+ps: not sure if its a arch linux thing, but build.rs or clang are not being nice; may have to mess around with the clang_args where the includes are
 
-`$rustc --version`
-
-  
-
-then clone this git & cd in
-
-  
-
-run this:
-
-`$cargo run`
-
-  
 
 ## Credits
 
@@ -41,6 +33,10 @@ run this:
 
 ## TODO
 
+- [ ] Set up properties
+manly to just get fgd locations
+also we need to write the settings some where
+- [ ] Get webgpu render going
 - [ ] Get webgpu render going
 - [ ] implement importer/exporter vmf 
 - [ ] figure out fgd and get that working

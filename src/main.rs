@@ -1,6 +1,6 @@
 use eframe::egui::{self, Vec2};
 
-use crate::tailui::{topcontextmenu::*, toyboxmenu::*, misctools::*};
+use crate::tailui::{topcontextmenu::*, toyboxmenu::*, misctools::*, settings::*};
 
 pub mod tailui;
 
@@ -18,14 +18,22 @@ fn main() {
     }));
 }
 
-#[derive(PartialEq)]
-enum selectiontype { Groups, Objects, Solids }
+#[derive(Default, PartialEq)]
+enum selectiontype {
+    #[default] 
+    Groups, Objects, Solids 
+}
 
 #[derive(Default)]
 struct tail {
     fuckyou: i32,
     nosaved: bool,
     show_extra_info: bool,
+
+    //toy stuff
+    selected: selectiontype,
+
+    //settings
 }
 
 impl tail {
@@ -51,10 +59,9 @@ impl eframe::App for tail {
             ui.group(|ui| {
                 ui.label("Select:");
 
-                let mut selected = selectiontype::Groups;
-                ui.radio_value(&mut selected, selectiontype::Groups, "Groups");
-                ui.radio_value(&mut selected, selectiontype::Objects, "Objects");
-                ui.radio_value(&mut selected, selectiontype::Objects, "Solids");
+                ui.radio_value(&mut self.selected, selectiontype::Groups, "Groups");
+                ui.radio_value(&mut self.selected, selectiontype::Objects, "Objects");
+                ui.radio_value(&mut self.selected, selectiontype::Solids, "Solids");
             });
 
             ui.group( |ui| {
@@ -85,9 +92,11 @@ impl eframe::App for tail {
                 ui.label("block");
             });
 
-            egui::Window::new("properties").show(ctx, |ui| {
-                ui.label("Hello World!");
-            });
+            settingswindow(self, ctx);
+
+            // egui::Window::new("properties").show(ctx, |ui| {
+            //     ui.label("Hello World!");
+            // });
         });
     }
 }
