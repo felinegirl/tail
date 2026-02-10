@@ -12,14 +12,18 @@ pub fn topcontextmenu(tail: &mut tail, ctx: &egui::Context) {
             );
             logo.on_hover_text("FUCK YOU!");
 
-            ui.button("File");
-            ui.button("Edit");
-            ui.button("Map");
-            ui.button("View");
-            ui.button("Tools");
-            ui.button("Instancing");
-            ui.button("Window");
-            ui.button("Help");
+            // ui.button("File");
+            // ui.button("Edit");
+            // ui.button("Map");
+            // ui.button("View");
+            // ui.button("Tools");
+            // ui.button("Instancing");
+            // ui.button("Window");
+            // ui.button("Help");
+
+            if ui.button("settings").clicked() {
+                tail.settingsopened = true;
+            }
             });
         });
 }

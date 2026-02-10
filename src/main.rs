@@ -1,8 +1,10 @@
+use std::{collections::HashMap, hash::Hash, string};
+
 use eframe::egui::{self, Vec2};
 
 pub mod tailui;
 pub mod sourcepp;
-use crate::{sourcepp::vpkpp::*, tailui::{misctools::*, settings::*, topcontextmenu::*, toyboxmenu::*}};
+use crate::{sourcepp::vpkpp::*, tailui::{misctools::*, settings::*, topcontextmenu::*, toyboxmenu::*, gamedatamodal::*}};
 
 fn main() {
     openvpk("./test.vpk");
@@ -34,7 +36,16 @@ struct tail {
     //toy stuff
     selected: selectiontype,
 
+    //if windows are opened
+    settingsopened: bool,
+    gamedataopened: bool,
+
     //settings
+    game_directory: String,
+    selected_game_data: u32,
+    game_data_names: HashMap<u32,String>,
+    game_datas: HashMap<u32,HashMap<u32,String>>,
+    data_selected: u32
 }
 
 impl tail {
@@ -93,7 +104,13 @@ impl eframe::App for tail {
                 ui.label("block");
             });
 
-            settingswindow(self, ctx);
+            if self.gamedataopened{
+                gamedatamodal(self, ctx);
+            }
+
+            if self.settingsopened{
+                settingswindow(self, ctx);
+            }
 
             // egui::Window::new("properties").show(ctx, |ui| {
             //     ui.label("Hello World!");
