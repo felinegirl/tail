@@ -16,8 +16,20 @@ fn main() {
     options,
     Box::new(|cc| {
 
+        let mut newsesh: tail = tail::default();
+
+        newsesh.start_menu = true;
+
+        match loadsettins(&mut newsesh) {
+            Ok(_) => {},
+            Err(_) => {
+                newsesh.start_menu = false;
+                newsesh.setup_menu = true;
+            },
+        };
+
         egui_extras::install_image_loaders(&cc.egui_ctx);
-        Ok(Box::<tail>::default())
+        Ok(Box::new(newsesh))
     }));
 }
 
@@ -33,6 +45,9 @@ struct tail {
     nosaved: bool,
     show_extra_info: bool,
 
+    setup_menu: bool, //for users who havn't added a config
+    start_menu: bool,
+
     //toy stuff
     selected: selectiontype,
 
@@ -41,7 +56,7 @@ struct tail {
     gamedataopened: bool,
 
     //settings
-    game_directory: String,
+    game_directory: HashMap<u32,String>,
     selected_game_data: u32,
     game_data_names: HashMap<u32,String>,
     game_datas: HashMap<u32,HashMap<u32,String>>,
@@ -50,16 +65,17 @@ struct tail {
 
 impl tail {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        // Customize egui here with cc.egui_ctx.set_fonts and cc.egui_ctx.set_visuals.
-        // Restore app state using cc.storage (requires the "persistence" feature).
-        // Use the cc.gl (a glow::Context) to create graphics shaders and buffers that you can use
-        // for e.g. egui::PaintCallback.
         Self::default()
     }
 }
 
 impl eframe::App for tail {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+
+        // if self.start_menu {
+        //     return;
+        // }
+
         topcontextmenu(self, ctx);
         toyboxmenu(self, ctx);
 

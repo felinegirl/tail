@@ -34,7 +34,7 @@ pub fn gamedatamodal(tail: &mut tail, ctx: &egui::Context){
             if ui.button("add").clicked() {
 
                 if(*newentryz==""){
-                    *errorz = format!("can't have empty name entry");
+                    *errorz = format!("🗿 can't have empty name entry");
                     return;
                 }
 
@@ -43,6 +43,7 @@ pub fn gamedatamodal(tail: &mut tail, ctx: &egui::Context){
                 *newentryz = format!("");
 
                 tail.game_datas.insert(nextintery, HashMap::new());
+                tail.game_directory.insert(nextintery, format!(""));
             }
         });
 
@@ -74,6 +75,8 @@ pub fn gamedatamodal(tail: &mut tail, ctx: &egui::Context){
                     tail.game_data_names.insert(nextintery, tail.game_data_names.get(&selectedgamez).unwrap().to_string());
 
                     tail.game_datas.insert(nextintery, tail.game_datas.get(&selectedgamez).unwrap().clone());
+
+                    tail.game_directory.insert(nextintery, tail.game_directory.get(&selectedgamez).unwrap().clone());
                 };
             });
         });

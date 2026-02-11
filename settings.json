@@ -1,0 +1,13 @@
+{
+  "game_configs": [
+    {
+      "game_data": [
+        "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2 Classified/bin/tf.fgd",
+        "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2 Classified/bin/tf2c.fgd"
+      ],
+      "game_directory": "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2 Classified/",
+      "name": "TeamFortress2 Classified 🐈"
+    }
+  ],
+  "version": "0.0.1"
+}
