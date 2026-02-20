@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs::File, io::{Read, Write}};
 
-use eframe::egui::{self, Ui, mutex::RwLock};
+use eframe::egui::{self, Direction, Ui, mutex::RwLock};
 use rfd::FileDialog;
 use serde_json::{Value, json};
 
@@ -33,6 +33,15 @@ pub fn loadsettins(tail: &mut tail) -> Result<(), Box<dyn std::error::Error>> {
     file.read_to_string(&mut yippee)?;
     
     let setjson: Value = serde_json::from_str(&yippee)?;
+
+    //setting last selected game
+    tail.selected_game_data = match setjson["last_selected_game"].as_i64() {
+        Some(a) => a as u32,
+        None => 0,
+    };
+    
+
+    //reading game configs
 
     let ba = setjson["game_configs"]
     .as_array()
@@ -103,6 +112,7 @@ fn savesettins(tail: &tail) -> Result<(), std::io::Error>{
 
     let export = json!({
         "version": "0.0.1",
+        "last_selected_game": tail.selected_game_data,
         "game_configs": game_config
     });
 
@@ -152,28 +162,53 @@ fn gameconfigmenu(tail: &mut tail, ctx: &egui::Context, ui: &mut Ui) {
                 },
                 None => {},
             }
+
+            ui.take_available_width();
             
         });
-        if ui.button("add").clicked() {
-            let newgd = match FileDialog::new()
-            .add_filter("fgd", &["fgd"])
-            .set_directory(".")
-            .pick_file(){
-                Some(a) => a.into_os_string().into_string().unwrap(),
-                None => return,
-            };
+        ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
 
-            let  a = tail.game_datas.get_mut(&tail.selected_game_data).unwrap();
-            let aleng = a.len() as u32;
-            a.insert(aleng, newgd);
-        }
+            if ui.button("remove").clicked() {
+                let  a = tail.game_datas.get_mut(&tail.selected_game_data).unwrap();
+                a.remove(&tail.data_selected);
+                tail.data_selected = 0;
+            }
+
+            if ui.button("add").clicked() {
+                let newgd = match FileDialog::new()
+                .add_filter("fgd", &["fgd"])
+                .set_directory(".")
+                .pick_file(){
+                    Some(a) => a.into_os_string().into_string().unwrap(),
+                    None => return,
+                };
+
+                let  a = tail.game_datas.get_mut(&tail.selected_game_data).unwrap();
+                let aleng = a.len() as u32;
+                a.insert(aleng, newgd);
+            }
+
+            ui.take_available_width();
+        });
     
     ui.horizontal(|ui|{
         ui.vertical(|ui|{
             ui.label("Default PointEntity");
+            egui::ComboBox::from_label("")
+                .selected_text(format!("func_blah"));
+                // .show_ui(ui, |ui| {
+                //     ui.selectable_value(&mut 0, 0, "awa");
+                // }
+            // );
         });
         ui.vertical(|ui|{
             ui.label("Default SolidEntity");
+            egui::ComboBox::from_label("")
+                .selected_text(format!("logic_death"));
+                // .show_ui(ui, |ui| {
+                //     ui.selectable_value(&mut 0, 0, "nya");
+                // }
+            // );
         });
     });
 
@@ -189,6 +224,7 @@ fn gameconfigmenu(tail: &mut tail, ctx: &egui::Context, ui: &mut Ui) {
                 None => return,
             }
         }
+        ui.take_available_width();
     });
 
 }
@@ -196,7 +232,9 @@ fn gameconfigmenu(tail: &mut tail, ctx: &egui::Context, ui: &mut Ui) {
 pub fn settingswindow(tail: &mut tail, ctx: &egui::Context){
     let mut csmz = csm.write();
 
-    egui::Window::new("settings").show(ctx, |ui| {
+    egui::Window::new("settings")
+    .collapsible(false)
+    .show(ctx, |ui| {
         //top
         ui.group(|ui|{
             ui.horizontal(|ui| {
@@ -204,6 +242,7 @@ pub fn settingswindow(tail: &mut tail, ctx: &egui::Context){
                 ui.selectable_value(&mut *csmz, CurrentSettingMenu::GameConfigs, "Game Configs");
                 ui.selectable_value(&mut *csmz, CurrentSettingMenu::BuildPrograms, "Build Programs");
             });
+            ui.take_available_width();
         });
 
         match *csmz {
@@ -214,14 +253,16 @@ pub fn settingswindow(tail: &mut tail, ctx: &egui::Context){
         }
 
         ui.separator();
-        ui.horizontal(|ui|{
-            ui.hyperlink_to("help...", "https://meowingbunny.neocities.org/");
-            if ui.button("save").clicked() {
-                savesettins(tail);
-            };
+        ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
             if ui.button("close").clicked() {
                 tail.settingsopened = false;
             };
+            if ui.button("save").clicked() {
+                savesettins(tail);
+            };
+            ui.hyperlink_to("help...", "https://meowingbunny.neocities.org/");
+
+            ui.take_available_width();
         });
         
         // ui.set_height(500.0);

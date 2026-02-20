@@ -21,7 +21,7 @@ also need to add `#include <stdbool.h>` to VPK.h
 
 [miniz](https://github.com/richgel999/miniz)
 
-[hat-trie](https://github.com/Tessil/hat-trie)
+[hat-trie](https://github.com/Tessil/hat-trie) (drop include folder on to /cpp-include/linux/include)
 
 [half](https://github.com/craftablescience/sourcepp/blob/e205ad3f7f7f6f6e12a0963507f754722207fd70/ext/half/include/half.hpp) (just need to download drop half.hpp in to /cpp-include/linux/include)
 

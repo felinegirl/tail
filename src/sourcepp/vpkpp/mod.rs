@@ -18,20 +18,24 @@ fn cool(bwa: *const c_char) -> Result<&'static str, Utf8Error>{
     unsafe { CStr::from_ptr(bwa) }.to_str()
 }
 
+//converts sourcepp_string_t to rust string
+fn death(dumb: bindings::sourcepp_string_t) -> String{
+    unsafe { String::from_raw_parts(dumb.data,dumb.size as usize, dumb.size as usize) }
+}
+
 pub(crate) fn openvpk(path: &str) -> i32{
     unsafe {
 
         let path: &str = &format!("{path}\0");
 
-        let mut fuckyou: vpkpp_pack_file_handle_t;
+        let fuckyou: vpkpp_pack_file_handle_t;
         fuckyou = bindings::vpkpp_open(stupid(path), None, None);
             
-        let awa = bindings::vpkpp_vpk_get_chunk_size(fuckyou);
+        let awa = bindings::vpkpp_get_filename(fuckyou);
+        dbg!(death(awa));
         
-        dbg!(awa)
-        // for a in 0..1 {
-
-        // }
+        let awa = bindings::vpkpp_get_entry_count(fuckyou, 0);
+        dbg!(awa);
         
     };
     

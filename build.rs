@@ -16,6 +16,7 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("./cpp-include/wrapper.h")
+        // .clang_arg("./cpp-include/linux/dist/sourcepp_vpkppc.so")
 
 
         // .clang_arg("-std=c++20")

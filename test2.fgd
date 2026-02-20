@@ -1,0 +1,47 @@
+//
+// TF2 game definition file (.fgd)
+//
+
+//
+// Material Exclusions
+//
+
+@MaterialExclusion
+[
+	// Names of the sub-directories we don't want to load materials from
+	"ambulance"
+	"backpack"
+	"cable"
+	"console"
+	"customcubemaps"
+	"detail"
+	"debug"
+	"effects"
+	"engine"
+	"environment maps"
+	"halflife"
+	"matsys_regressiontest"
+	"hlmv"
+	"hud"
+	"logo"
+	"maps"
+	"models"
+	"overviews"
+	"perftest"
+	"scripted"
+	"shadertest"
+	"vgui"
+	"voice"
+]
+
+//
+// AutoVisGroups
+//
+
+@SolidClass base(Targetname,worldbase,ResponseContext) = worldspawn : 
+	"This is the world entity. Each map can only contain one, and it's automatically created for you."
+[
+	skyname(string) : "SkyBox Texture Name" : "sky_tf2_04"
+	detailvbsp(string) : "Detail .vbsp file" : "detail_2fort.vbsp" : "Detail .vbsp file to use for emitting detail props (found in directory <root>/modname)"
+	detailmaterial(string) : "Detail material file" : "detail/detailsprites_2fort" : "Material for detail sprites to use for drawing detail props"
+]
