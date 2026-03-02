@@ -1,14 +1,8 @@
 {
   "game_configs": [
     {
-      "game_data": [],
-      "game_directory": "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2/tf/",
-      "name": "Live TF2 🐋"
-    },
-    {
       "game_data": [
-        "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2 Classified/bin/tf2c.fgd",
-        "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2 Classified/bin/tf.fgd"
+        "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2 Classified/bin/tf2c.fgd"
       ],
       "game_directory": "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2 Classified/",
       "name": "TeamFortress2 Classified 🐈"
@@ -19,8 +13,13 @@
       ],
       "game_directory": "",
       "name": "fuck you"
+    },
+    {
+      "game_data": [],
+      "game_directory": "/home/loonya/.local/share/Steam/steamapps/common/Team Fortress 2/tf/",
+      "name": "Live TF2 🐋"
     }
   ],
-  "last_selected_game": 2,
+  "last_selected_game": 1,
   "version": "0.0.1"
 }

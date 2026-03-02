@@ -57,7 +57,7 @@ struct tail {
     gamedataopened: bool,
     opengamedataopened: bool,
 
-    //settings
+    //game data
     game_directory: HashMap<u32,String>,
     selected_game_data: u32,
     game_data_names: HashMap<u32,String>,
