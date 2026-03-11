@@ -1,10 +1,14 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::sync::Arc;
 
-use eframe::egui::TextBuffer;
-use eframe::egui::ahash::HashMap;
+use strum_macros::EnumString;
 
+use crate::fgd;
+
+#[derive(EnumString)]
 pub enum PropertyType {
 
     //basic (they don't know they're still alive)
@@ -55,25 +59,34 @@ pub enum PropertyType {
     vecline,
     vector,
     
-    unknown(String) // name
+    unknown(String), // name
+    null
 }
 
+#[derive(Default, Clone)]
 pub struct BaseClass {
     Name: String,
-
+    Desc: String,
+    properties: Vec<Arc<(PropertyType, String, String)>>
 }
 
+#[derive(Default)]
 pub struct SolidClass {
     Name: String,
-    properties: Vec<(PropertyType, String, String)> // property Type, name, desc
+    Desc: String,
+    properties: Vec<Arc<(PropertyType, String, String)>> // property Type, name, desc
+}
+
+
+#[derive(Default)]
+pub struct FGDResult {
+    BaseClasses: HashMap<String,BaseClass>,
+    SolidClasses: HashMap<String,SolidClass>
 }
 
 
 
-
-
-
-fn parseproperty(leek: String) -> Result<(String, Vec<String>), Box<dyn std::error::Error>> {
+fn parseproperty(leek: &String) -> Result<(String, Vec<String>), Box<dyn std::error::Error>> {
 
     //split from (
     let mut frombit: Vec<&str> = leek.split('(').collect();
@@ -97,7 +110,7 @@ fn parseproperty(leek: String) -> Result<(String, Vec<String>), Box<dyn std::err
 
 // if toolpp gets ported to rust or c, probably replace it with that
 
-pub fn open(path: &String) -> Result<(), Box<dyn std::error::Error>> {
+pub fn open(path: &String) -> Result<FGDResult, Box<dyn std::error::Error>> {
 
     
     let mut file = File::open(path)?;
@@ -242,7 +255,7 @@ pub fn open(path: &String) -> Result<(), Box<dyn std::error::Error>> {
                 continue;
             }
 
-            if la==':' || la==' ' || la=='\n' {
+            if la==':' || la==' ' || la=='\n' || la=='+' {
                 if newstring != "" {
                     a.push(newstring);
                 }
@@ -256,15 +269,24 @@ pub fn open(path: &String) -> Result<(), Box<dyn std::error::Error>> {
         contentz.push(a);
     }
 
-    dbg!(&contentz);
+    // println!("{:?}", &contentz);
 
     
+    let mut fgdresult = FGDResult{
+        BaseClasses: HashMap::new(),
+        SolidClasses: HashMap::new(),
+    };
+    
     for lines in contentz {
-        dbg!(&lines);
         match lines.first().unwrap().as_str() {
             "include" => includes(path, lines)?,
+            "BaseClass" => {
+                let awa = baseclass(&fgdresult, lines)?;
+                fgdresult.BaseClasses.insert(format!("{}",awa.Name), awa);
+            },
             "SolidClass" => {
-                
+                let awa = solidclass(&fgdresult, lines)?;
+                fgdresult.SolidClasses.insert(format!("{}",awa.Name), awa);
             }
             _=>()
         }
@@ -272,7 +294,7 @@ pub fn open(path: &String) -> Result<(), Box<dyn std::error::Error>> {
 
 
 
-    Ok(())
+    Ok(fgdresult)
 }
 
 fn includes(path: &String, lines: Vec<String>) -> Result<(), Box<dyn std::error::Error + 'static>> {
@@ -291,5 +313,232 @@ fn includes(path: &String, lines: Vec<String>) -> Result<(), Box<dyn std::error:
             let err = format!("while runnining included fgd:\n'{}' \n\n{}", location, err);
             return Err(err.into());
         },
+    })
+}
+
+fn baseclass(fgdresult: &FGDResult, lines: Vec<String>) -> Result<BaseClass, Box<dyn std::error::Error + 'static>> {
+
+    //get properties
+    let mut properties: Vec<Arc<(PropertyType, String, String)>> = Vec::new(); 
+
+    let mut i = 1;
+
+    //
+    //begining properies
+    //
+
+    let mut falt = 0;
+
+    if lines[i] != "=" { //this means there is a base probably
+        loop{
+            let (basesname, baseprops) = parseproperty(&lines[1])?;
+            match &*basesname {
+                "base" => {
+                    for bwah in baseprops {
+                        //this grabs it from already existing base classes
+                        let our_founders = &fgdresult.BaseClasses
+                        .get(&bwah)
+                        .ok_or(format!("wtf is {} in baseclass bases\n\n{:?}", bwah, &lines))?
+                        .properties;
+                        for waaa in our_founders.into_iter() {
+                            properties.push(waaa.clone());
+                        }
+                        // dbg!(falt);
+                        falt+=1;
+                        if(falt >= 69){
+                            return Err("nice but wtf\n you should paw a developer; something really really bad happen\n but don't tail a dev\n unless you want...\n idk...\nunless you have 69 or mroe baseclasses".into());
+                        }
+                    }
+                }
+                "color" => (), //??? wtf
+                _ => return Err(format!("wtf is {} in baseclass bases\n\n{:#?}", basesname, &lines).into()),
+            }
+            i+=1;
+            if lines[i] == "=" {
+                break;
+            }
+        }
+        
+    } 
+    
+    if lines[i] != "=" {
+        return Err(format!("baseclass error missing =\n{:#?}",&lines).into());
+    }
+    i+=1;
+
+    //
+    //baseclass's name
+    //
+    let le_name = &*lines[i];
+    // dbg!(&lines[i]);
+    // i+=1;
+
+    //
+    // description
+    //
+    let mut le_description: String = format!("");
+    loop { 
+        // dbg!(&lines[i]);
+        i+=1;
+        if lines.len()-1 <= i {return Err(format!("missing '[' at {}?\n\n{:#?}", i, &lines).into());}
+        
+
+        le_description = format!("{}{}",le_description,lines[i]);
+        if lines[i+1] == "+" {
+            i+=1;
+            continue;
+        }
+        if lines[i+1] == "[" {
+            i+=1;
+            break;
+        }
+        break;
+    }
+
+
+    
+    if lines[i] == "[" {
+        let bracketlevel = 0;
+
+        let mut prop = PropertyType::null;
+        let mut name = String::new();
+        let mut desc = String::new();
+        // let mut newbaseclass = (PropertyType::null, String::new(), String::new());
+
+        loop {
+            i+=1;
+            
+            if lines.len() <= i {
+                return Err(format!("unending baseclass... theres no bottom... help...\n\n{:#?}",&lines).into());
+            }
+
+            
+
+        }
+
+    }else{
+        return Err(format!("baseclass {} error missing ]\n\n{:#?}", le_name, &lines).into());
+    }
+
+    Ok(BaseClass { 
+        Name: format!("{}",le_name),
+        Desc: le_description,
+        properties
+    })
+}
+
+fn solidclass(fgdresult: &FGDResult, lines: Vec<String>) -> Result<SolidClass, Box<dyn std::error::Error + 'static>> {
+
+    //get properties
+    let mut properties: Vec<Arc<(PropertyType, String, String)>> = Vec::new(); 
+
+    let mut i = 1;
+
+    //
+    //begining properies
+    //
+
+    let mut falt = 0;
+
+    if lines[i] != "=" { //this means there is a base probably
+        loop{
+            let (basesname, baseprops) = parseproperty(&lines[1])?;
+            match &*basesname {
+                "base" => {
+                    // for bwah in baseprops {
+
+                    //     //this grabs it from already existing base classes
+                    //     let our_founders = &fgdresult.BaseClasses
+                    //     .get(&bwah)
+                    //     .ok_or(format!("wtf is {} in solidclass bases\n\n{:?}", bwah, &lines))?
+                    //     .properties;
+
+
+                    //     for waaa in our_founders.into_iter() {
+                    //         properties.push(waaa.clone());
+                    //     }
+                        
+                    //     falt+=1;
+                    //     if(falt >= 69){
+                    //         return Err("nice but wtf\n you should paw a developer; something really really bad happen\n but don't tail a dev\n unless you want...\n idk...\nunless you have 69 or mroe baseclasses".into());
+                    //     }
+                    // }
+                }
+                "color" => (), //??? wtf
+                _ => ()//return Err(format!("wtf is {} in solidclass bases\n\n{:#?}", basesname, &lines).into()),
+            }
+            i+=1;
+            if lines[i] == "=" {
+                break;
+            }
+        }
+        
+    } 
+    
+    if lines[i] != "=" {
+        return Err(format!("baseclass error missing =\n{:#?}",&lines).into());
+    }
+    i+=1;
+
+    //
+    //baseclass's name
+    //
+    let le_name = &*lines[i];
+    // dbg!(&lines[i]);
+    // i+=1;
+
+    //
+    // description
+    //
+    let mut le_description: String = format!("");
+    loop { 
+        // dbg!(&lines[i]);
+        i+=1;
+        if lines.len()-1 <= i {return Err(format!("missing '[' at {}?\n\n{:#?}", i, &lines).into());}
+        
+
+        le_description = format!("{}{}",le_description,lines[i]);
+        if lines[i+1] == "+" {
+            i+=1;
+            continue;
+        }
+        if lines[i+1] == "[" {
+            i+=1;
+            break;
+        }
+        break;
+    }
+
+
+    
+    if lines[i] == "[" {
+        let bracketlevel = 0;
+
+        let mut prop = PropertyType::null;
+        let mut name = String::new();
+        let mut desc = String::new();
+        // let mut newbaseclass = (PropertyType::null, String::new(), String::new());
+
+        loop {
+            i+=1;
+            
+            if lines.len() <= i {
+                return Err(format!("unending solidbase... theres no bottom... help...\n\n{:#?}",&lines).into());
+            }
+
+            if lines[i] == "]" {
+                break;
+            }
+
+        }
+
+    }else{
+        return Err(format!("baseclass {} error missing ]\n\n{:#?}", le_name, &lines).into());
+    }
+
+    Ok(SolidClass { 
+        Name: format!("{}",le_name),
+        Desc: le_description,
+        properties
     })
 }

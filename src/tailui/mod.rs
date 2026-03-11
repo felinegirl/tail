@@ -8,6 +8,8 @@ pub mod settings;
 
 pub mod gamedatamodal;
 
+pub mod propertiespanel;
+
 use rfd::FileDialog;
 
 fn openfilebrowser(path: String, editpath: &mut String){

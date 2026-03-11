@@ -37,6 +37,23 @@
 ]
 
 //
+// Base Classes
+//
+
+// @BaseClass = TeamNum
+// [
+// 	TeamNum(choices) : "Team" : 0 : "Team" =
+// 	[
+// 		0 : "Any"
+// 		2 : "Red"
+// 		3 : "Blue"
+// 		4 : "Green"
+// 		5 : "Yellow"
+// 	]
+// 	input SetTeam(integer) : "Changes the entity's team."
+// ]
+
+//
 // AutoVisGroups
 //
 

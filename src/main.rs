@@ -4,7 +4,7 @@ use eframe::egui::{self, Vec2};
 
 pub mod tailui;
 pub mod sourcepp;
-use crate::{sourcepp::vpkpp::*, tailui::{misctools::*, settings::*, topcontextmenu::*, toyboxmenu::*, gamedatamodal::*}};
+use crate::{fgd::FGDResult, sourcepp::vpkpp::*, tailui::{gamedatamodal::*, misctools::*, settings::*, topcontextmenu::*, toyboxmenu::*}};
 pub mod fgd;
 pub mod loadassets;
 
@@ -64,6 +64,8 @@ struct tail {
     game_datas: HashMap<u32,HashMap<u32,String>>,
     data_selected: u32,
 
+    fgddata: FGDResult,
+
     global_error: String
 }
 
@@ -79,7 +81,10 @@ impl eframe::App for tail {
         if self.global_error != "" {
             egui::Modal::new("fuckedup".into()).show(ctx, |ui| {
                 ui.heading("error:");
+                egui::ScrollArea::vertical().show(ui, |ui| {
                 ui.label(&self.global_error);
+                
+                });
             });
             return;
         }

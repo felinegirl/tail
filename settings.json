@@ -9,7 +9,7 @@
     },
     {
       "game_data": [
-        "/home/loonya/Documents/tail/test.fgd"
+        "./test/test.fgd"
       ],
       "game_directory": "",
       "name": "fuck you"
